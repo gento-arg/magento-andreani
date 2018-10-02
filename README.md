@@ -13,7 +13,7 @@ Magento version >= 2.1.2
 Para concretar la instalacion del módulo es necesario realizar los siguientes pasos. Primeramente, parados en la carpeta root del proyecto añadimos el modulo a nuestro composer.json ejecutando:
 
 ```
-composer require "andreani/magento2":"@dev"
+composer require gento/magento-andreani
 ```
 
 Nos instalará la última versión del modulo.
@@ -30,3 +30,4 @@ Una vez actualizado nuestro repositorio composer, procedemos a activar el modulo
 ## Autores
 
 * IDS Soluciones eCommerce
+* GENTo
