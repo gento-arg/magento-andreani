@@ -125,9 +125,9 @@ define(
                         success : function (response)
                         {
                             $('#s_method_sucursal').attr('checked',false);
+                            andreaniSucursalLocalidad.append('<option>Seleccione una localidad</option>');
                             for(var i = 0; i < response.length; i++)
                             {
-                                andreaniSucursalLocalidad.append('<option>Seleccione una localidad</option>');
                                 andreaniSucursalLocalidad.append('<option value="'+response[i]["codigo_postal"]+'">'+response[i]["localidad"]+'</option>')
                             }
                             andreaniSucursalLocalidad.show();
