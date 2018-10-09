@@ -3,11 +3,8 @@
 namespace Ids\Andreani\Plugin\Customer;
 
 use Magento\Customer\Api\CustomerMetadataInterface;
-use Magento\Customer\Model\Delegation\Data\NewOperation;
 use Magento\Framework\Api\DataObjectHelper;
 use Magento\Framework\Api\ImageProcessorInterface;
-use Magento\Customer\Model\Delegation\Storage as DelegatedStorage;
-use Magento\Framework\App\ObjectManager;
 
 /**
  * Class CustomerRepositoryPlugin
@@ -54,11 +51,6 @@ class CustomerRepositoryPlugin
      * @var \Magento\Framework\Event\ManagerInterface
      */
     protected $eventManager;
-
-    /**
-     * @var DelegatedStorage
-     */
-    private $delegatedStorage;
     
     /**
      * CustomerRepositoryPlugin constructor.
@@ -72,7 +64,6 @@ class CustomerRepositoryPlugin
      * @param \Magento\Framework\Api\ExtensibleDataObjectConverter $extensibleDataObjectConverter
      * @param DataObjectHelper $dataObjectHelper
      * @param ImageProcessorInterface $imageProcessor
-     * @param DelegatedStorage|null $delegatedStorage
      */
     public function __construct(
         \Magento\Customer\Model\CustomerFactory $customerFactory,
@@ -84,8 +75,7 @@ class CustomerRepositoryPlugin
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Framework\Api\ExtensibleDataObjectConverter $extensibleDataObjectConverter,
         DataObjectHelper $dataObjectHelper,
-        ImageProcessorInterface $imageProcessor,
-        DelegatedStorage $delegatedStorage = null
+        ImageProcessorInterface $imageProcessor
     ) {
         $this->customerFactory = $customerFactory;
         $this->customerSecureFactory = $customerSecureFactory;
@@ -95,8 +85,6 @@ class CustomerRepositoryPlugin
         $this->storeManager = $storeManager;
         $this->extensibleDataObjectConverter = $extensibleDataObjectConverter;
         $this->imageProcessor = $imageProcessor;
-        $this->delegatedStorage = $delegatedStorage
-            ?? ObjectManager::getInstance()->get(DelegatedStorage::class);
     }
 
     /**
@@ -114,9 +102,6 @@ class CustomerRepositoryPlugin
         $passwordHash = null
     )
     {
-        /** @var NewOperation|null $delegatedNewOperation */
-        $delegatedNewOperation = !$customer->getId()
-            ? $this->delegatedStorage->consumeNewOperation() : null;
         $prevCustomerData = null;
         if ($customer->getId()) {
             $prevCustomerData = $customerRepository->getById($customer->getId());
@@ -185,14 +170,6 @@ class CustomerRepositoryPlugin
         $this->customerRegistry->push($customerModel);
         $customerId = $customerModel->getId();
 
-        if (!$customer->getAddresses()
-            && $delegatedNewOperation
-            && $delegatedNewOperation->getCustomer()->getAddresses()
-        ) {
-            $customer->setAddresses(
-                $delegatedNewOperation->getCustomer()->getAddresses()
-            );
-        }
         if ($customer->getAddresses() !== null) {
             if ($customer->getId()) {
                 $existingAddresses = $customerRepository->getById($customer->getId())->getAddresses();
@@ -223,9 +200,7 @@ class CustomerRepositoryPlugin
         $savedCustomer = $customerRepository->get($customer->getEmail(), $customer->getWebsiteId());
         $this->eventManager->dispatch(
             'customer_save_after_data_object',
-            ['customer_data_object' => $savedCustomer, 'orig_customer_data_object' => $customer,
-                'delegate_data' => $delegatedNewOperation
-                    ? $delegatedNewOperation->getAdditionalData() : []]
+            ['customer_data_object' => $savedCustomer, 'orig_customer_data_object' => $customer]
         );
         return $savedCustomer;
     }

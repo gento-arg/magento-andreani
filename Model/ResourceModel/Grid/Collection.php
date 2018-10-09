@@ -46,7 +46,7 @@ class Collection extends AbstractCollection implements SearchResultInterface
         $eventObject,
         $resourceModel,
         $model = 'Magento\Sales\Model\ResourceModel\Grid\Document',
-        $connection = null,
+        \Magento\Framework\DB\Adapter\AdapterInterface $connection = null,
         \Magento\Framework\Model\ResourceModel\Db\AbstractDb $resource = null
     ) {
         $this->_eventPrefix = $eventPrefix;
