@@ -31,7 +31,7 @@ class Collection extends AbstractCollection implements SearchResultInterface
      * @param string $eventObject
      * @param string $resourceModel
      * @param string $model
-     * @param string|null $connection
+     * @param \Magento\Framework\DB\Adapter\AdapterInterface $connection
      * @param \Magento\Framework\Model\ResourceModel\Db\AbstractDb $resource
      *
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
@@ -46,7 +46,7 @@ class Collection extends AbstractCollection implements SearchResultInterface
         $eventObject,
         $resourceModel,
         $model = 'Magento\Sales\Model\ResourceModel\Grid\Document',
-        $connection = null,
+        \Magento\Framework\DB\Adapter\AdapterInterface $connection = null,
         \Magento\Framework\Model\ResourceModel\Db\AbstractDb $resource = null
     ) {
         $this->_eventPrefix = $eventPrefix;
